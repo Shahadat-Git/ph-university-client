@@ -4,9 +4,11 @@ import { useLoginMutation } from "../redux/features/auth/authApi";
 import { useAppDispatch } from "../redux/hooks";
 import { setUser } from "../redux/features/auth/authSlice";
 import { verifyToken } from "../utils/verifyToken";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { register, handleSubmit } = useForm({
     defaultValues: {
       id: "A-0001",
@@ -25,8 +27,11 @@ const Login = () => {
     };
     const res = await login(userInfo).unwrap();
     const user = verifyToken(res.data.accessToken);
+    if (user) {
+      navigate("/", { replace: true });
+      dispatch(setUser({ user: user, token: res.data.accessToken }));
+    }
 
-    dispatch(setUser({ user: user, token: res.data.accessToken }));
     console.log(res);
   };
   return (
